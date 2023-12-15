@@ -1,8 +1,0 @@
-version: '3.8'
-services:
-  go-gin-app:
-    build:
-      context: .
-      dockerfile: Dockerfile.backend
-    ports:
-      - "8080:8080"
