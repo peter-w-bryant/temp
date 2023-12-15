@@ -1,3 +1,5 @@
+package routes
+
 import (
 	"encoding/json"
 	"os"
@@ -7,12 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func main() {
+func SetupRouter() *gin.Engine {
 	router := gin.Default()
 
 	router.POST("/post", handlePostRequest)
 
-	router.Run(":8080")
+	return router
 }
 
 func handlePostRequest(c *gin.Context) {
