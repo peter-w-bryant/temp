@@ -1,11 +1,8 @@
 package gitlab
 
 import (
-	"encoding/json"
+	"backend/utils"
 	"fmt"
-	"os"
-	"os/exec"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -36,7 +33,7 @@ func handlePostRequest(c *gin.Context) {
 	}
 
 	// Create a JSON file
-	filename, err := createJSONFile(jsonData)
+	filename, err := utils.CreateJSONFile(jsonData)
 
 	// If the JSON file could not be created, return an error
 	if err != nil {
@@ -51,44 +48,4 @@ func handlePostRequest(c *gin.Context) {
 	// }
 
 	c.JSON(200, gin.H{"message": "File processed and merge request created", "file": filename})
-}
-
-func createJSONFile(data map[string]interface{}) (string, error) {
-	fileName := "data-" + time.Now().Format("20060102150405") + ".json"
-	fileData, err := json.MarshalIndent(data, "", " ")
-	if err != nil {
-		return "", err
-	}
-
-	err = os.WriteFile(fileName, fileData, 0644)
-	return fileName, err
-}
-
-func gitCommitAndCreateMergeRequest(filename string) error {
-	// Git add
-	cmd := exec.Command("git", "add", filename)
-	if err := cmd.Run(); err != nil {
-		return err
-	}
-
-	// Git commit
-	commitMessage := "Add " + filename
-	cmd = exec.Command("git", "commit", "-m", commitMessage)
-	if err := cmd.Run(); err != nil {
-		return err
-	}
-
-	// Git push and create a merge request
-	// Replace the following with your GitLab token and project specifics
-	gitLabToken := "your_gitlab_token"
-	projectID := "your_project_id"
-	sourceBranch := "your_branch"
-	targetBranch := "main"
-	cmd = exec.Command("curl", "-X", "POST", "-H", "PRIVATE-TOKEN: "+gitLabToken,
-		"https://gitlab.com/api/v4/projects/"+projectID+"/merge_requests",
-		"-d", "source_branch="+sourceBranch,
-		"-d", "target_branch="+targetBranch,
-		"-d", "title=Merge "+filename)
-
-	return cmd.Run()
 }
