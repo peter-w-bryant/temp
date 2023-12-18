@@ -1,17 +1,19 @@
 package main
 
 import (
-	"backend/routes/gitlab"
+	"backend/routes"
 	"fmt"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	fmt.Println("Starting server...")
 
-	// Init GitLab create JSON in GitLab route
-	router := gitlab.SetupRouter("/api/create-gitlab-json")
+	router := gin.Default()
 
-	// TODO: Other routes
+	// /api/create-topic: Create a Kafka topic using Confluent's REST Proxy
+	routes.SetupCreateTopicRouter(router)
 
-	router.Run(":8080")
+	router.Run("localhost:8080")
 }
