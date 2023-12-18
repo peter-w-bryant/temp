@@ -1,10 +1,10 @@
 package routes
 
 import (
+	"backend/logger"
 	"backend/utils"
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -74,8 +74,8 @@ func genericErrorHandler(statusCode int, err error, c *gin.Context) bool {
 		c.JSON(statusCode, gin.H{
 			"error": err.Error(),
 		})
-		log.Println(err) // Log the error without exiting
-		c.Abort()        // Ensure no further handlers are called
+		logger.Logger.Println(err) // Log the error without exiting
+		c.Abort()                  // Ensure no further handlers are called
 		return true
 	}
 	return false
