@@ -10,7 +10,6 @@ import (
 )
 
 func SetupCreateTopicRouter(router *gin.Engine) *gin.Engine {
-	fmt.Println("GitLab route loaded: " + "/api/create-topic")
 	router.POST("/api/create-topic", handleCreateTopicPostRequest)
 	return router
 }
@@ -35,7 +34,7 @@ func handleCreateTopicPostRequest(c *gin.Context) {
 		return
 	}
 
-	// Create the topic by sending a POST request to the REST Proxy
+	// Read the topic spec JSON file for the topic
 	filePath := "../topic_specs/" + topicName + ".json"
 	topicSpecJSON, err := os.ReadFile(filePath)
 	genericErrorHandler(500, err, c)
@@ -49,6 +48,7 @@ func handleCreateTopicPostRequest(c *gin.Context) {
 	url := topicMap["url"].(string)
 	clusterID, err := utils.GetClusterID(url)
 	genericErrorHandler(500, err, c)
+	fmt.Println("Cluster ID:", clusterID)
 
 	// Create the topic
 	err = utils.CreateTopic(url, clusterID, topicMap)
