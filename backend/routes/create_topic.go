@@ -4,6 +4,7 @@ import (
 	"backend/utils"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -37,22 +38,30 @@ func handleCreateTopicPostRequest(c *gin.Context) {
 	// Read the topic spec JSON file for the topic
 	filePath := "../topic_specs/" + topicName + ".json"
 	topicSpecJSON, err := os.ReadFile(filePath)
-	genericErrorHandler(500, err, c)
+	if genericErrorHandler(500, err, c) {
+		return
+	}
 
 	// Store the JSON data into a map
 	var topicMap map[string]interface{}
 	err = json.Unmarshal(topicSpecJSON, &topicMap)
-	genericErrorHandler(500, err, c)
+	if genericErrorHandler(500, err, c) {
+		return
+	}
 
 	// Get the cluster ID from the REST Proxy
 	url := topicMap["url"].(string)
 	clusterID, err := utils.GetClusterID(url)
-	genericErrorHandler(500, err, c)
+	if genericErrorHandler(500, err, c) {
+		return
+	}
 	fmt.Println("Cluster ID:", clusterID)
 
 	// Create the topic
 	err = utils.CreateTopic(url, clusterID, topicMap)
-	genericErrorHandler(500, err, c)
+	if genericErrorHandler(500, err, c) {
+		return
+	}
 
 	c.JSON(200, gin.H{
 		"message": "Topic created successfully",
@@ -60,11 +69,14 @@ func handleCreateTopicPostRequest(c *gin.Context) {
 
 }
 
-func genericErrorHandler(statusCode int, err error, c *gin.Context) {
+func genericErrorHandler(statusCode int, err error, c *gin.Context) bool {
 	if err != nil {
 		c.JSON(statusCode, gin.H{
 			"error": err.Error(),
 		})
-		return
+		log.Println(err) // Log the error without exiting
+		c.Abort()        // Ensure no further handlers are called
+		return true
 	}
+	return false
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -81,8 +82,6 @@ func CreateTopic(url string, clusterID string, topicSpec map[string]interface{})
 	err = json.Unmarshal(body, &data)
 	genericErrorHandler(err)
 
-	fmt.Println("Response data:", data)
-
 	// Check if the topic was created successfully
 	_, cluster_id_exists := data["cluster_id"]
 	// If the cluster ID is not in the response, then assume that the topic was not created successfully
@@ -102,7 +101,7 @@ func CreateTopic(url string, clusterID string, topicSpec map[string]interface{})
 
 func genericErrorHandler(err error) error {
 	if err != nil {
-		fmt.Printf("Error: %s\n", err.Error())
+		log.Println(err)
 		return err
 	}
 	return nil
