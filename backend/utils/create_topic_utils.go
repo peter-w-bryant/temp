@@ -1,10 +1,10 @@
 package utils
 
 import (
-	"backend/logger"
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -101,8 +101,7 @@ func CreateTopic(url string, clusterID string, topicSpec map[string]interface{})
 
 func genericErrorHandler(err error) error {
 	if err != nil {
-		logger.Logger.Println(err)
-
+		log.Println(err)
 		return err
 	}
 	return nil

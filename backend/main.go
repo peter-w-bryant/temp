@@ -3,16 +3,15 @@ package main
 import (
 	"backend/logger"
 	"backend/routes"
-	"fmt"
-	"io"
-	"os"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	fmt.Println("Starting server...")
-	gin.DefaultWriter = io.MultiWriter(logger.Logger.Writer(), os.Stdout)
+	log.SetOutput(logger.Logger.Writer())      // Set the global logger to use the custom logger
+	gin.DefaultWriter = logger.Logger.Writer() // Use the custom logger for gin
+	log.Println("Starting GIN server...")
 
 	router := gin.Default()
 
